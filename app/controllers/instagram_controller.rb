@@ -66,29 +66,29 @@ class InstagramController < ApplicationController
   def user_insights
     graph = Koala::Facebook::API.new(session[:access_token_graph])
     fields_user = 'id,name,username,profile_picture_url,biography,followers_count,follows_count,media_count,stories,
-    insights.metric(impressions,reach).period(day)'
-    fields_demo = 'insights.metric(impressions,reach).period(day)'
-    fields_user_res = graph.get_object(session[:insta_account], { fields: fields_user })
-    fields_demo_res = graph.get_object('17841462527107856/insights', {
-      metric: 'engaged_audience_demographics',
-      metric_type: 'total_value',
-      period: 'lifetime',
-      timeframe: 'last_30_days',
-      breakdown: 'age'
-    })
-    x = fields_demo_res.unshift(fields_user_res)
-    x << { 'ir atrás': url_for(controller: 'instagram', action: 'index') }
-    render json: x
+    insights.metric(impressions,reach,email_contacts,follower_count,profile_views,text_message_clicks,website_clicks).period(day)'
+    @insights = graph.get_object(session[:insta_account], { fields: fields_user })
+    # fields_demo_res = graph.get_object('17841462527107856/insights', {
+    #   metric: 'engaged_audience_demographics',
+    #   metric_type: 'total_value',
+    #   period: 'lifetime',
+    #   timeframe: 'last_30_days',
+    #   breakdown: 'age'
+    # })
+    # fields_insights = 'insights.metric(impressions,reach,email_contacts,follower_count,online_followers,profile_views,text_message_clicks,website_clicks).period(lifetime)'
+    # fields_demo_res = graph.get_object(session[:insta_account], {fields: fields_insights})
+    # binding.pry
+    # @insights = fields_demo_res.unshift(fields_user_res)
+    # @insights << { 'ir atrás': url_for(controller: 'instagram', action: 'index') }
+    render :data
   end
 
   def media_insights
     graph = Koala::Facebook::API.new(session[:access_token_graph])
-    fields = 'id,caption,media_type,media_url,permalink,thumbnail_url,like_count,comments_count,timestamp,
-              comments{id,text,username,like_count,replies{id,username,like_count,text}},
-              insights.metric(impressions,reach,comments,follows,likes,shares){name,period,description,values}'
-    insights = graph.get_object("#{session[:insta_account]}/media", { fields: fields })
-    insights << { 'ir atrás': url_for(controller: 'instagram', action: 'index') }
-    render json: insights
+    fields = 'id,caption,media_type,media_url,permalink,thumbnail_url,like_count,comments_count,timestamp,comments{id,text,username,like_count,replies{id,username,like_count,text}},insights.metric(impressions,reach,comments,follows,likes,shares,saved,video_views,likes,plays,total_interactions,replies,profile_activity,profile_visits){name,period,description,values}'
+    @insights = graph.get_object("#{session[:insta_account]}/media", { fields: fields })
+    @insights << { 'ir atrás': url_for(controller: 'instagram', action: 'index') }
+    render :data
   end
 
   private
