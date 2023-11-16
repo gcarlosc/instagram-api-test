@@ -87,7 +87,6 @@ class InstagramController < ApplicationController
     graph = Koala::Facebook::API.new(session[:access_token_graph])
     fields = 'id,caption,media_type,media_url,permalink,thumbnail_url,like_count,comments_count,timestamp,comments{id,text,username,like_count,replies{id,username,like_count,text}},insights.metric(impressions,reach,comments,follows,likes,shares,saved,video_views,likes,plays,total_interactions,replies,profile_activity,profile_visits){name,period,description,values}'
     @insights = graph.get_object("#{session[:insta_account]}/media", { fields: fields })
-    @insights << { 'ir atrás': url_for(controller: 'instagram', action: 'index') }
     render :data
   rescue Koala::Facebook::ClientError => e
     if e.fb_error_subcode == 2108006
