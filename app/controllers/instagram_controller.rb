@@ -89,6 +89,13 @@ class InstagramController < ApplicationController
     @insights = graph.get_object("#{session[:insta_account]}/media", { fields: fields })
     @insights << { 'ir atrás': url_for(controller: 'instagram', action: 'index') }
     render :data
+  rescue Koala::Facebook::ClientError => e
+    if e.fb_error_subcode == 2108006
+      @insights = { message: 'La cuenta de instagram no tiene publicaciones posteriores a la conversión a cuenta business' }
+    else
+      @insights = { message: e.message }
+    end
+    render :data
   end
 
   private
